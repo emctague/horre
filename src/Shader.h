@@ -5,7 +5,7 @@
 
 class Shader {
 public:
-    Shader(std::string vertexPath, std::string fragmentPath);
+    Shader(const std::string& vertexPath, const std::string& fragmentPath);
     ~Shader();
 
     void use () { glUseProgram(program); }
@@ -13,7 +13,7 @@ public:
 private:
     unsigned program;
 
-    unsigned loadShader(std::string path, unsigned type);
+    static unsigned loadShader(const std::string& path, unsigned type);
 };
 
 
