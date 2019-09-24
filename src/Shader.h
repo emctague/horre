@@ -2,6 +2,7 @@
 
 #include <string>
 #include "glinc.h"
+#include <glm/gtc/type_ptr.hpp>
 
 /// OpenGL shader program instances
 class Shader {
@@ -14,6 +15,10 @@ public:
 
     /// Make this shader program active
     void use () { glUseProgram(program); }
+
+    void uniform(const std::string& name, glm::mat4 value) {
+        glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+    }
 
 private:
 
