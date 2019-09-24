@@ -1,7 +1,9 @@
 #include "glinc.h"
 #include "Shader.h"
 #include "Model.h"
+#include "Entity.h"
 #include <glm/glm.hpp>
+#include <vector>
 
 struct CameraState {
     float pitch, yaw, last_x, last_y;
@@ -11,22 +13,27 @@ GLFWwindow *init();
 void on_mouse(GLFWwindow *window, double xpos, double ypos);
 
 int main() {
-
     auto window = init();
+
     CameraState cameraState { 0.0, 0.0, 640, 360 };
-    glm::vec3 cameraPos { 0.0f, 0.0f, 3.0f };
+    glm::vec3 *cameraPos;
+
+    std::vector<std::unique_ptr<Entity>> entities;
+
+    entities.emplace_back(std::make_unique<Entity>(Model("../test/test.bin"),
+            glm::vec3(0, 0, 3)));
+    entities.emplace_back(std::make_unique<Entity>(Model("../test/test.bin"),
+                                                   glm::vec3(0, 0, 0)));
+
+    cameraPos = &entities[0]->position;
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetWindowUserPointer(window, &cameraState);
     glfwSetCursorPosCallback(window, on_mouse);
 
-    Model mdl("../test/test.bin");
-    Shader garbage("../test/test.vert", "../test/test.frag");
+    Shader mainShader("../test/test.vert", "../test/test.frag");
 
     glm::mat4 projection = glm::perspective(glm::radians(75.0f), 16.0f / 9.0f, 0.0f, 100.0f);
-
-    garbage.use();
-    garbage.uniform("projection", projection);
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -38,12 +45,11 @@ int main() {
         });
         glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0, 1, 0)));
         glm::vec3 up = glm::normalize(glm::cross(right, front));
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + front, up);
+        glm::mat4 view = glm::lookAt(*cameraPos, *cameraPos + front, up);
 
-        mdl.use();
-        garbage.use();
-        garbage.uniform("view", view);
-        mdl.draw();
+        for (auto& entity : entities) {
+            entity->render(mainShader, projection, view);
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();

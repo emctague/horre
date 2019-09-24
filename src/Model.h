@@ -1,5 +1,6 @@
 #pragma once
 #include "glinc.h"
+#include <string>
 
 /// A loaded OpenGL model / mesh
 class Model {
