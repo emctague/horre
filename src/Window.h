@@ -1,4 +1,5 @@
 #pragma once
+
 #include "glinc.h"
 #include <glm/glm.hpp>
 
@@ -11,6 +12,9 @@ public:
 
     /** Handles rendering to the screen. */
     virtual void render() = 0;
+
+    /** Handles resize events. */
+    virtual void onResize(glm::i64vec2 size) = 0;
 };
 
 
@@ -18,7 +22,7 @@ class Window {
 public:
 
     /** Initialize a window with the given size and title. */
-    Window(glm::i64vec2 size, const char *title);
+    Window(glm::i64vec2 size, const char *title, IWindowUser *user);
 
     /** Handle window cleanup. This will cleanup GLFW entirely. */
     ~Window();
@@ -28,7 +32,7 @@ public:
 
 
     /** Runs the main window update/draw loop. */
-    void mainLoop(IWindowUser *user);
+    void mainLoop();
 
 
 private:
@@ -53,7 +57,10 @@ private:
     glm::vec2 previousMousePosition;
 
     /** Stores the movement of the mouse between updates. */
-    glm::vec2 mouseEventDelta { 0.0, 0.0 };
+    glm::vec2 mouseEventDelta{0.0, 0.0};
+
+    /** The window user for this window. */
+    IWindowUser *user;
 
 
     /** Event handler triggered when a mouse moves in any window. */

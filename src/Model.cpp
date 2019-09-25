@@ -15,7 +15,7 @@ Model::Model(const std::string &path) {
     int size = bin.tellg();
     bin.seekg(0, bin.beg);
     verts.resize(size / sizeof(float));
-    bin.read((char*)verts.data(), size);
+    bin.read((char *) verts.data(), size);
     bin.close();
 
     // Copy the model data into the GPU

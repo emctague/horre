@@ -9,14 +9,14 @@ class Shader {
 public:
 
     /// Create a shader program given the paths to its vertex and fragment shader source files
-    Shader(const std::string& vertexPath, const std::string& fragmentPath);
+    Shader(const std::string &vertexPath, const std::string &fragmentPath);
 
     ~Shader();
 
     /// Make this shader program active
-    void use () { glUseProgram(program); }
+    void use() { glUseProgram(program); }
 
-    void uniform(const std::string& name, glm::mat4 value) {
+    void uniform(const std::string &name, glm::mat4 value) {
         glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
     }
 
@@ -26,7 +26,7 @@ private:
     unsigned program;
 
     /// Load and compile a shader - type is an OpenGL enum type
-    static unsigned loadShader(const std::string& path, unsigned type);
+    static unsigned loadShader(const std::string &path, unsigned type);
 };
 
 

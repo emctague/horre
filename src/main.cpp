@@ -5,16 +5,15 @@
 #include "Window.h"
 #include <glm/glm.hpp>
 #include <vector>
+#include <iostream>
 
 
 class App : public IWindowUser {
 public:
 
     App() :
-        window(glm::i64vec2 { 1280, 720 }, "Title"),
-        projection(glm::perspective(glm::radians(75.0f), 16.0f / 9.0f, 0.0f, 100.0f))
-
-    {
+            window(glm::i64vec2{1280, 720}, "Title", this),
+            projection() {
         window.setCursorEnabled(false);
 
         auto entShader = std::make_shared<Shader>("../test/test.vert", "../test/test.frag");
@@ -22,12 +21,16 @@ public:
 
         entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 3));
         entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 0));
+        entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 6));
+        entities.emplace_back(entModel, entShader, glm::vec3(3, 0, 0));
+        entities.emplace_back(entModel, entShader, glm::vec3(-3, 0, 0));
 
         cameraPos = &entities[0].position;
+        entities[0].visible = false;
     }
 
-    void run () {
-        window.mainLoop(this);
+    void run() {
+        window.mainLoop();
     }
 
     void update(float deltaTime, glm::vec2 mouseDelta) override {
@@ -48,7 +51,7 @@ public:
     void render() override {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::vec3 front = glm::normalize(glm::vec3 {
+        glm::vec3 front = glm::normalize(glm::vec3{
                 cos(glm::radians(cameraPitch)) * cos(glm::radians(cameraYaw)),
                 sin(glm::radians(cameraPitch)),
                 cos(glm::radians(cameraPitch)) * sin(glm::radians(cameraYaw))
@@ -57,16 +60,27 @@ public:
         glm::vec3 up = glm::normalize(glm::cross(right, front));
         glm::mat4 view = glm::lookAt(*cameraPos, *cameraPos + front, up);
 
-        for (auto& entity : entities) {
-            entity.render(projection, view);
+        for (auto &entity : entities) {
+            if (entity.visible)
+                entity.render(projection, view);
         }
     }
 
+    void onResize(glm::i64vec2 size) override {
+        projection = glm::perspective(
+                45.0f,
+                (float) size.x / (float) size.y,
+                0.1f,
+                100.0f
+        );
+    }
+
 private:
-    Window window;
-    std::vector<Entity> entities;
-    float cameraPitch, cameraYaw;
-    glm::mat4 projection;
+    Window window; /**< Handle for window, graphics + input. */
+    std::vector<Entity> entities; /**< All entities in the scene. */
+    float cameraPitch = 0; /**< The pitch of the camera. */
+    float cameraYaw = -90.0f;   /**< The yaw of the camera. */
+    glm::mat4 projection; /**< Projection matrix used. */
     glm::vec3 *cameraPos;
 };
 

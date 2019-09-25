@@ -2,7 +2,7 @@
 #include <sstream>
 #include <fstream>
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
+Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     // Load and compile individual shaders
     auto vertexShader = loadShader(vertexPath, GL_VERTEX_SHADER);
     auto fragmentShader = loadShader(fragmentPath, GL_FRAGMENT_SHADER);
@@ -33,7 +33,7 @@ Shader::~Shader() {
     glDeleteProgram(program);
 }
 
-unsigned Shader::loadShader(const std::string& path, unsigned type) {
+unsigned Shader::loadShader(const std::string &path, unsigned type) {
     std::ifstream input(path);
 
     if (!input.is_open()) throw std::runtime_error("Unable to open file: " + path);
