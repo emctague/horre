@@ -38,11 +38,16 @@ public:
 
     /** Remove all unused resources from the resources list. */
     void cleanup() {
-        for (std::pair<std::size_t, PtrType>& resource : resources) {
+        for (std::pair<const unsigned long, PtrType> &resource : resources) {
             if (resource.second.use_count() <= 1) {
                 resources.erase(resource.first);
             }
         }
+    }
+
+    /** Get the number of loaded resources. */
+    int loadedCount() {
+        return resources.size();
     }
 
 private:

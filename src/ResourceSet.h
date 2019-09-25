@@ -11,6 +11,9 @@ class ResourceSet {
 public:
     ResourceManager<Shader, std::string, std::string> shaders;
     ResourceManager<Model, std::string> models;
+
+    ~ResourceSet();
+
+    /** Clean up all resources, returning a count of all remaining loaded resources. */
+    int cleanup();
 };
-
-

@@ -20,7 +20,7 @@ public:
     void draw() { glDrawArrays(GL_TRIANGLES, 0, vertCount); }
 
 private:
-    unsigned vao, vbo, vertCount;
+    unsigned vao = 0, vbo = 0, vertCount = 0;
 };
 
 

@@ -59,7 +59,7 @@ private:
     bool mouseHasMoved = false;
 
     /** Indicates the previous position of the mouse. */
-    glm::vec2 previousMousePosition;
+    glm::vec2 previousMousePosition{0.0};
 
     /** Stores the movement of the mouse between updates. */
     glm::vec2 mouseEventDelta{0.0, 0.0};

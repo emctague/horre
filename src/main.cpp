@@ -1,13 +1,10 @@
 #include "glinc.h"
 #include "Shader.h"
-#include "Model.h"
 #include "Entity.h"
 #include "Window.h"
 #include "ResourceSet.h"
 #include <glm/glm.hpp>
 #include <vector>
-#include <iostream>
-
 
 class App : public IWindowUser {
 public:
@@ -28,15 +25,15 @@ public:
 
         camera = &entities[0];
         entities[0].visible = false;
-        entities[0].update = [](Window *window, Entity *self, float deltaTime) {
+        entities[0].update = [](Window *pWindow, Entity *self, float deltaTime) {
             auto front = self->getFront();
             auto right = self->getRight();
-            if (window->keyIsDown(GLFW_KEY_W)) self->position += front * deltaTime * 2.0f;
-            if (window->keyIsDown(GLFW_KEY_S)) self->position -= front * deltaTime * 2.0f;
-            if (window->keyIsDown(GLFW_KEY_D)) self->position += right * deltaTime * 2.0f;
-            if (window->keyIsDown(GLFW_KEY_A)) self->position -= right * deltaTime * 2.0f;
+            if (pWindow->keyIsDown(GLFW_KEY_W)) self->position += front * deltaTime * 2.0f;
+            if (pWindow->keyIsDown(GLFW_KEY_S)) self->position -= front * deltaTime * 2.0f;
+            if (pWindow->keyIsDown(GLFW_KEY_D)) self->position += right * deltaTime * 2.0f;
+            if (pWindow->keyIsDown(GLFW_KEY_A)) self->position -= right * deltaTime * 2.0f;
         };
-        entities[1].update = [](Window *window, Entity *self, float deltaTime) {
+        entities[1].update = [](Window *pWindow, Entity *self, float deltaTime) {
             self->roll += deltaTime * 0.2f;
             self->pitch += deltaTime * 0.5f;
         };
@@ -44,6 +41,11 @@ public:
 
     void run() {
         window.mainLoop();
+    }
+
+    ~App() {
+        // Unload all loaded entities
+        entities.clear();
     }
 
     void update(float deltaTime, glm::vec2 mouseDelta) override {
@@ -59,7 +61,7 @@ public:
             if (camera->pitch < -89.0f) camera->pitch = -89.0f;
         }
 
-        for (auto& entity : entities) {
+        for (auto &entity : entities) {
             if (entity.update) {
                 entity.update(&window, &entity, deltaTime);
             }
@@ -68,7 +70,7 @@ public:
     }
 
     void render() override {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear((unsigned) GL_COLOR_BUFFER_BIT | (unsigned) GL_DEPTH_BUFFER_BIT);
 
         glm::vec3 front = camera->getFront();
         glm::vec3 up = glm::normalize(glm::cross(camera->getRight(), front));
