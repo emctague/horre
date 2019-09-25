@@ -9,6 +9,8 @@ public:
     /// Load a 3D model from the specified file
     explicit Model (const std::string& path);
 
+    ~Model();
+
     /// Make this model active for rendering
     void use() { glBindVertexArray(vao); }
 

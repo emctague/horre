@@ -6,14 +6,15 @@
 
 class Entity {
 public:
-    Entity (Model model, glm::vec3 position);
-    void render(Shader& shader, glm::mat4 projection, glm::mat4 view);
+    Entity (std::shared_ptr<Model> model, std::shared_ptr<Shader> shader, glm::vec3 position);
+    void render(glm::mat4 projection, glm::mat4 view);
 
     glm::vec3 position;
+    glm::vec3 size;
+    std::shared_ptr<Model> model;
+    std::shared_ptr<Shader> shader;
 
-private:
-    Model model;
-
+    void (*volume_trigger)(Entity *other);
 };
 
 

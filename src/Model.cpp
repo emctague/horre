@@ -29,3 +29,8 @@ Model::Model(const std::string &path) {
 
     vertCount = verts.size() / 3;
 }
+
+Model::~Model() {
+    glDeleteBuffers(1, &vbo);
+    glDeleteVertexArrays(1, &vao);
+}
