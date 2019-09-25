@@ -36,6 +36,10 @@ public:
             if (window->keyIsDown(GLFW_KEY_D)) self->position += right * deltaTime * 2.0f;
             if (window->keyIsDown(GLFW_KEY_A)) self->position -= right * deltaTime * 2.0f;
         };
+        entities[1].update = [](Window *window, Entity *self, float deltaTime) {
+            self->roll += deltaTime * 0.2f;
+            self->pitch += deltaTime * 0.5f;
+        };
     }
 
     void run() {

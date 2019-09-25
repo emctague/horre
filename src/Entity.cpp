@@ -17,6 +17,12 @@ void Entity::render(glm::mat4 projection, glm::mat4 view) {
 
     glm::mat4 modelMatrix{1.0f};
     modelMatrix = glm::scale(modelMatrix, size);
+
+    // Note: these rotations are not necessarily correct and should be fixed.
+    modelMatrix = glm::rotate(modelMatrix, roll, glm::vec3(1, 0, 0));
+    modelMatrix = glm::rotate(modelMatrix, pitch, glm::vec3(0, 1, 0));
+    modelMatrix = glm::rotate(modelMatrix, yaw, glm::vec3(0, 0, 1));
+
     modelMatrix = glm::translate(modelMatrix, position);
 
     shader->uniform("model", modelMatrix);
