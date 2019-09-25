@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "Entity.h"
 #include "Window.h"
+#include "ResourceSet.h"
 #include <glm/glm.hpp>
 #include <vector>
 #include <iostream>
@@ -16,8 +17,8 @@ public:
             projection() {
         window.setCursorEnabled(false);
 
-        auto entShader = std::make_shared<Shader>("../test/test.vert", "../test/test.frag");
-        auto entModel = std::make_shared<Model>("../test/test.bin");
+        auto entShader = resources.shaders.getResource("../test/test.vert", "../test/test.frag");
+        auto entModel = resources.models.getResource("../test/test.bin");
 
         entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 3));
         entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 0));
@@ -86,6 +87,7 @@ public:
 
 private:
     Window window; /**< Handle for window, graphics + input. */
+    ResourceSet resources; /**< Keeps track of all resources. */
     std::vector<Entity> entities; /**< All entities in the scene. */
     Entity *camera = nullptr; /** The entity that acts as a camera object. */
     glm::mat4 projection; /**< Projection matrix used. */
