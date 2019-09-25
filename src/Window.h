@@ -30,6 +30,11 @@ public:
     /** Sets the cursor to enabled or disabled (grabs cursor when disabled.) */
     void setCursorEnabled(bool enabled);
 
+    /** Determines if a key is pressed. */
+    bool keyIsDown(int key) {
+        return glfwGetKey(window, key) == GLFW_PRESS;
+    }
+
 
     /** Runs the main window update/draw loop. */
     void mainLoop();

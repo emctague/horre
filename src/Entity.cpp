@@ -16,7 +16,9 @@ void Entity::render(glm::mat4 projection, glm::mat4 view) {
     model->use();
 
     glm::mat4 modelMatrix{1.0f};
+    modelMatrix = glm::scale(modelMatrix, size);
     modelMatrix = glm::translate(modelMatrix, position);
+
     shader->uniform("model", modelMatrix);
     shader->uniform("projection", projection);
     shader->uniform("view", view);

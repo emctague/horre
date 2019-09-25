@@ -25,8 +25,16 @@ public:
         entities.emplace_back(entModel, entShader, glm::vec3(3, 0, 0));
         entities.emplace_back(entModel, entShader, glm::vec3(-3, 0, 0));
 
-        cameraPos = &entities[0].position;
+        camera = &entities[0];
         entities[0].visible = false;
+        entities[0].update = [](Window *window, Entity *self, float deltaTime) {
+            auto front = self->getFront();
+            auto right = self->getRight();
+            if (window->keyIsDown(GLFW_KEY_W)) self->position += front * deltaTime * 2.0f;
+            if (window->keyIsDown(GLFW_KEY_S)) self->position -= front * deltaTime * 2.0f;
+            if (window->keyIsDown(GLFW_KEY_D)) self->position += right * deltaTime * 2.0f;
+            if (window->keyIsDown(GLFW_KEY_A)) self->position -= right * deltaTime * 2.0f;
+        };
     }
 
     void run() {
@@ -39,11 +47,17 @@ public:
         if (mouseDelta.x != 0 || mouseDelta.y != 0) {
             float sens = 0.05f;
             mouseDelta *= sens;
-            cameraYaw += mouseDelta.x;
-            cameraPitch += mouseDelta.y;
+            camera->yaw += mouseDelta.x;
+            camera->pitch += mouseDelta.y;
 
-            if (cameraPitch > 89.0f) cameraPitch = 89.0f;
-            if (cameraPitch < -89.0f) cameraPitch = -89.0f;
+            if (camera->pitch > 89.0f) camera->pitch = 89.0f;
+            if (camera->pitch < -89.0f) camera->pitch = -89.0f;
+        }
+
+        for (auto& entity : entities) {
+            if (entity.update) {
+                entity.update(&window, &entity, deltaTime);
+            }
         }
 
     }
@@ -51,14 +65,9 @@ public:
     void render() override {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::vec3 front = glm::normalize(glm::vec3{
-                cos(glm::radians(cameraPitch)) * cos(glm::radians(cameraYaw)),
-                sin(glm::radians(cameraPitch)),
-                cos(glm::radians(cameraPitch)) * sin(glm::radians(cameraYaw))
-        });
-        glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0, 1, 0)));
-        glm::vec3 up = glm::normalize(glm::cross(right, front));
-        glm::mat4 view = glm::lookAt(*cameraPos, *cameraPos + front, up);
+        glm::vec3 front = camera->getFront();
+        glm::vec3 up = glm::normalize(glm::cross(camera->getRight(), front));
+        glm::mat4 view = glm::lookAt(camera->position, camera->position + front, up);
 
         for (auto &entity : entities) {
             if (entity.visible)
@@ -78,10 +87,8 @@ public:
 private:
     Window window; /**< Handle for window, graphics + input. */
     std::vector<Entity> entities; /**< All entities in the scene. */
-    float cameraPitch = 0; /**< The pitch of the camera. */
-    float cameraYaw = -90.0f;   /**< The yaw of the camera. */
+    Entity *camera = nullptr; /** The entity that acts as a camera object. */
     glm::mat4 projection; /**< Projection matrix used. */
-    glm::vec3 *cameraPos;
 };
 
 
