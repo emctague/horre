@@ -13,6 +13,8 @@ public:
             window(glm::i64vec2{1280, 720}, "Title", this),
             projection() {
         window.setCursorEnabled(false);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
 
         auto entShader = resources.shaders.getResource("../test/test.vert", "../test/test.frag");
         auto entModel = resources.models.getResource("../test/Tombstones_simple.dae");
@@ -36,8 +38,8 @@ public:
 
         entities[1].size *= 0.03;
         entities[1].update = [](Window *pWindow, Entity *self, float deltaTime) {
-            self->roll += deltaTime * 0.2f;
-            self->pitch += deltaTime * 0.5f;
+            //self->roll += deltaTime * 0.2f;
+            //self->pitch += deltaTime * 0.5f;
         };
     }
 
