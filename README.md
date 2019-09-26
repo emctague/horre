@@ -12,6 +12,8 @@ catch-all Entity class.
 - Install GLFW on your system in such a way that `-lglfw` can be used to link.
   Or just modify `CMakeLists.txt` to find it, I guess.
   (And yes, I *know* that isn't how modern CMake is supposed to be used! I'm just being lazy!)
+  
+- Install Assimp on your system so that it can be included and linked to.
 
 - Install GLM somewhere such that programs can `#include <glm/...>`. 
 

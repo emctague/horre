@@ -13,7 +13,6 @@ Entity::Entity(std::shared_ptr<Model> model, std::shared_ptr<Shader> shader, glm
 
 void Entity::render(glm::mat4 projection, glm::mat4 view) {
     shader->use();
-    model->use();
 
     glm::mat4 modelMatrix{1.0f};
     modelMatrix = glm::scale(modelMatrix, size);

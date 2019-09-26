@@ -15,13 +15,13 @@ public:
         window.setCursorEnabled(false);
 
         auto entShader = resources.shaders.getResource("../test/test.vert", "../test/test.frag");
-        auto entModel = resources.models.getResource("../test/test.bin");
+        auto entModel = resources.models.getResource("../test/Tombstones_simple.dae");
 
         entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 3));
         entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 0));
-        entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 6));
-        entities.emplace_back(entModel, entShader, glm::vec3(3, 0, 0));
-        entities.emplace_back(entModel, entShader, glm::vec3(-3, 0, 0));
+        //entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 6));
+        //entities.emplace_back(entModel, entShader, glm::vec3(3, 0, 0));
+        //entities.emplace_back(entModel, entShader, glm::vec3(-3, 0, 0));
 
         camera = &entities[0];
         entities[0].visible = false;
@@ -33,6 +33,8 @@ public:
             if (pWindow->keyIsDown(GLFW_KEY_D)) self->position += right * deltaTime * 2.0f;
             if (pWindow->keyIsDown(GLFW_KEY_A)) self->position -= right * deltaTime * 2.0f;
         };
+
+        entities[1].size *= 0.03;
         entities[1].update = [](Window *pWindow, Entity *self, float deltaTime) {
             self->roll += deltaTime * 0.2f;
             self->pitch += deltaTime * 0.5f;
