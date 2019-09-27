@@ -21,9 +21,8 @@ catch-all Entity class.
 
 - `./horre`
 
-Note that the horre binary CANNOT work without the `res` directory being present in the directory above the current
-working directory you run it from, at least for the time being. It refers to resources internally with paths like
-`.../res/shader/test.frag`.
+Note that the horre binary CANNOT work without the `res` directory being present in the current working directory you
+run it from, at least for the time being. It refers to resources internally with paths like `res/shader/test.frag`.
 
 ## Plans
 

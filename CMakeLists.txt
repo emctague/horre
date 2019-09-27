@@ -25,3 +25,13 @@ endif ()
 add_executable(horre src/main.cpp glad/src/glad.c src/glinc.h src/Shader.cpp src/Shader.h src/Model.cpp src/Model.h src/Entity.cpp src/Entity.h src/Window.cpp src/Window.h src/ResourceManager.h src/ResourceSet.h src/ResourceSet.cpp src/Texture.cpp src/Texture.h stb/stb_image.h src/Mesh.cpp src/Mesh.h src/GlobalConfig.h src/Framebuffer.cpp src/Framebuffer.h)
 target_link_libraries(horre PRIVATE glfw assimp glm)
 target_include_directories(horre PRIVATE glad/include)
+
+add_custom_command(
+		TARGET horre POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_SOURCE_DIR}/res
+		$<TARGET_FILE_DIR:horre>/res)
+
+add_custom_command(TARGET horre POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E tar "cfvz" "horre.tgz" $<TARGET_FILE_DIR:horre>/res $<TARGET_FILE_DIR:horre>/horre)
+
