@@ -12,8 +12,8 @@ newmtl 02___Default
 	Kd 0.0000 0.0000 0.0000
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka ../test/fafa2.png
-	map_Kd ../test/fafa2.png
+	map_Ka fafa2.png
+	map_Kd fafa2.png
 
 newmtl 01___Default
 	Ns 10.0000
@@ -26,6 +26,6 @@ newmtl 01___Default
 	Kd 0.5882 0.5882 0.5882
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka ../test/fafa2.png
-	map_Kd ../test/fafa2.png
-	map_d ../test/fa5_opacity.png
+	map_Ka fafa2.png
+	map_Kd fafa2.png
+	map_d fa5_opacity.png

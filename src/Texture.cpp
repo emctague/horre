@@ -10,7 +10,7 @@
 Texture::Texture(const std::string &path) {
     // Load the texture with stb_image
     int width, height, channelCount;
-    unsigned char *data = stbi_load(path.c_str(), &width, &height, &channelCount, 0);
+    unsigned char *data = stbi_load(("../res/texture/" + path).c_str(), &width, &height, &channelCount, 0);
     if (!data) throw std::runtime_error("Could not load texture: " + path);
 
     // Create and populate a texture

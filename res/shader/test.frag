@@ -14,6 +14,5 @@ vec3 lightPos = vec3(3.0, 3.0, 3.0);
 void main() {
     float a = texture(alpha, alphaUV).r;
     if (a < 0.1) discard;
-    color = texture(diffuse, diffuseUV) * (10.0 / distance(fragPos, lightPos));
-    color.a *= a;
+    color = vec4(texture(diffuse, diffuseUV).xyz * (10.0 / distance(fragPos, lightPos)), a);
 }

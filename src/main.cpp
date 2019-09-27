@@ -18,9 +18,9 @@ public:
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        auto entShader = resources.shaders.getResource("../test/test.vert", "../test/test.frag");
-        auto entModel = resources.models.getResource(&resources, "../test/Tombstones_simple.dae");
-        auto treeModel = resources.models.getResource(&resources, "../test/tree.obj");
+        auto entShader = resources.shaders.getResource("test.vert", "test.frag");
+        auto entModel = resources.models.getResource(&resources, "Tombstones_simple.dae");
+        auto treeModel = resources.models.getResource(&resources, "tree.obj");
 
         entities.emplace_back(entModel, entShader, glm::vec3(-2, 1.5, 2));
         entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 0));

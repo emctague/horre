@@ -74,7 +74,7 @@ Mesh::Mesh(ResourceSet *set, const aiScene *scene, aiMesh *mesh, glm::mat4 trans
             std::cout << "DIFFUSE = " << path.C_Str() << ", ";
             diffuse = set->textures.getResource(std::string(path.C_Str()));
         } else {
-            diffuse = set->textures.getResource("../test/default_diffuse.png");
+            diffuse = set->textures.getResource("default_diffuse.png");
         }
 
         if (material->GetTextureCount(aiTextureType_OPACITY)) {
@@ -82,7 +82,7 @@ Mesh::Mesh(ResourceSet *set, const aiScene *scene, aiMesh *mesh, glm::mat4 trans
             std::cout << "ALPHA =  " << path.C_Str() << ", ";
             alpha = set->textures.getResource(std::string(path.C_Str()));
         } else {
-            alpha = set->textures.getResource("../test/default_alpha.png");
+            alpha = set->textures.getResource("default_alpha.png");
         }
     }
 }

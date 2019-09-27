@@ -9,7 +9,7 @@
 
 Model::Model(ResourceSet *set, const std::string &path) {
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
+    const aiScene *scene = importer.ReadFile("../res/model/" + path, aiProcess_Triangulate | aiProcess_FlipUVs |
                                                    aiProcess_OptimizeMeshes | aiProcess_GenNormals |
                                                    aiProcess_CalcTangentSpace | aiProcess_RemoveRedundantMaterials);
 
@@ -17,6 +17,7 @@ Model::Model(ResourceSet *set, const std::string &path) {
         throw std::runtime_error("Unable to open file: " + path + " (reason: " + importer.GetErrorString() + ")");
 
     processNode(set, scene, scene->mRootNode, glm::mat4{1});
+    std::cout << std::endl;
 }
 
 Model::~Model() {

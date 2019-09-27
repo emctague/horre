@@ -35,7 +35,7 @@ Shader::~Shader() {
 }
 
 unsigned Shader::loadShader(const std::string &path, unsigned type) {
-    std::ifstream input(path);
+    std::ifstream input("../res/shader/" + path);
 
     if (!input.is_open()) throw std::runtime_error("Unable to open file: " + path);
 
