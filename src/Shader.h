@@ -24,6 +24,10 @@ public:
         glUniform1i(glGetUniformLocation(program, name.c_str()), value);
     }
 
+    void uniform(const std::string &name, glm::vec3 value) {
+        glUniform3fv(glGetUniformLocation(program, name.c_str()), 1, glm::value_ptr(value));
+    }
+
 private:
 
     /// The OpenGL shader program instance being used

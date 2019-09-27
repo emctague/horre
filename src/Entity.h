@@ -12,7 +12,7 @@ public:
     ~Entity();
 
     /** Render the entity onscreen with the given matrices. */
-    void render(glm::mat4 projection, glm::mat4 view);
+    void render(glm::mat4 projection, glm::mat4 view, glm::vec3 viewPos);
 
     /** Calculate the forward-facing direction for this entity. */
     glm::vec3 getFront() {
