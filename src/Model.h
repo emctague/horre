@@ -8,6 +8,13 @@
 #include <assimp/scene.h>
 #include "Mesh.h"
 #include <iostream>
+#include "GlobalConfig.h"
+
+#if GlobalConfig_DoMeshLoadLog
+#define MESHLOG(STUFF) std::cout << STUFF;
+#else
+#define MESHLOG(STUFF)
+#endif
 
 class Mesh;
 

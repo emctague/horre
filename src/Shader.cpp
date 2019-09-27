@@ -1,7 +1,6 @@
 #include "Shader.h"
-#include <sstream>
+#include "GlobalConfig.h"
 #include <fstream>
-#include <iostream>
 
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     // Load and compile individual shaders
@@ -35,7 +34,7 @@ Shader::~Shader() {
 }
 
 unsigned Shader::loadShader(const std::string &path, unsigned type) {
-    std::ifstream input("../res/shader/" + path);
+    std::ifstream input(GlobalConfig_ShaderPath + path);
 
     if (!input.is_open()) throw std::runtime_error("Unable to open file: " + path);
 

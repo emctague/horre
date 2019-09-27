@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include <iostream>
 #include "ResourceSet.h"
+#include "Model.h"
 
 
 /** Base case of OpenGL attrib pointer template tool. */
@@ -71,7 +72,7 @@ Mesh::Mesh(ResourceSet *set, const aiScene *scene, aiMesh *mesh, glm::mat4 trans
 
         if (material->GetTextureCount(aiTextureType_DIFFUSE)) {
             material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-            std::cout << "DIFFUSE = " << path.C_Str() << ", ";
+            MESHLOG("DIFFUSE = " << path.C_Str() << ", ")
             diffuse = set->textures.getResource(std::string(path.C_Str()));
         } else {
             diffuse = set->textures.getResource("default_diffuse.png");
@@ -79,7 +80,7 @@ Mesh::Mesh(ResourceSet *set, const aiScene *scene, aiMesh *mesh, glm::mat4 trans
 
         if (material->GetTextureCount(aiTextureType_OPACITY)) {
             material->GetTexture(aiTextureType_OPACITY, 0, &path);
-            std::cout << "ALPHA =  " << path.C_Str() << ", ";
+            MESHLOG("ALPHA =  " << path.C_Str() << ", ")
             alpha = set->textures.getResource(std::string(path.C_Str()));
         } else {
             alpha = set->textures.getResource("default_alpha.png");
