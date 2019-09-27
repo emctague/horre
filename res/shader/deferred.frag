@@ -7,12 +7,12 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpecular;
 uniform vec3 viewPos;
 
-vec3 lightPos = vec3(20.0, 20.0, 20.0);
+vec3 lightPos = vec3(10.0, 10.0, 10.0);
 vec3 lightColor = vec3(0.8, 0.8, 1.0);
 const float pi = 3.14159265;
 const float shininess = 0.2;
 const float energyConservation = (8.0 + shininess) / (8.0 * pi);
-const float quadraticAttenuation = 0.032f;
+const float quadraticAttenuation = 0.03f;
 
 out vec4 color;
 
