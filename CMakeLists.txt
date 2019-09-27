@@ -26,12 +26,12 @@ add_executable(horre src/main.cpp glad/src/glad.c src/glinc.h src/Shader.cpp src
 target_link_libraries(horre PRIVATE glfw assimp glm)
 target_include_directories(horre PRIVATE glad/include)
 
-add_custom_command(
-		TARGET horre POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${CMAKE_SOURCE_DIR}/res
-		$<TARGET_FILE_DIR:horre>/res)
+add_custom_target(resources ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${CMAKE_BINARY_DIR}/res
+        BYPRODUCTS ${CMAKE_BINARY_DIR}/res
+        DEPENDS res)
+
+add_dependencies(horre resources)
 
 add_custom_command(TARGET horre POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E tar "cfvz" "horre.tgz" $<TARGET_FILE_DIR:horre>/res $<TARGET_FILE_DIR:horre>/horre)
-
