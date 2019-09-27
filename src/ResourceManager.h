@@ -38,10 +38,10 @@ public:
 
     /** Remove all unused resources from the resources list. */
     void cleanup() {
-        for (std::pair<const unsigned long, PtrType> &resource : resources) {
-            if (resource.second.use_count() <= 1) {
-                resources.erase(resource.first);
-            }
+        auto iterator = resources.begin();
+        while (iterator != resources.end()) {
+            if (iterator->second.use_count() <= 1) iterator = resources.erase(iterator);
+            else iterator++;
         }
     }
 

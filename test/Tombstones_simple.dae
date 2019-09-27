@@ -11,7 +11,7 @@
   </asset>
   <library_images>
     <image id="Tombstones_simple0-img" name="Tombstones_simple0">
-      <init_from>./Tombstones_simple0.png</init_from>
+      <init_from>../test/Tombstones_simple0.png</init_from>
     </image>
   </library_images>
   <library_materials>

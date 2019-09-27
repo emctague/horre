@@ -1,10 +1,19 @@
 #version 330 core
 
 in vec3 fragPos;
+in vec2 diffuseUV;
+in vec2 alphaUV;
+
 out vec4 color;
+
+uniform sampler2D diffuse;
+uniform sampler2D alpha;
 
 vec3 lightPos = vec3(3.0, 3.0, 3.0);
 
 void main() {
-    color = vec4(vec3(1.0, 1.0, 1.0) * (2.0 / distance(fragPos, lightPos)), 1.0);
+    float a = texture(alpha, alphaUV).r;
+    if (a < 0.1) discard;
+    color = texture(diffuse, diffuseUV) * (10.0 / distance(fragPos, lightPos));
+    color.a *= a;
 }

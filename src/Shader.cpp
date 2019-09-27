@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include <sstream>
 #include <fstream>
+#include <iostream>
 
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     // Load and compile individual shaders

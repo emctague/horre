@@ -15,18 +15,24 @@ public:
         window.setCursorEnabled(false);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         auto entShader = resources.shaders.getResource("../test/test.vert", "../test/test.frag");
-        auto entModel = resources.models.getResource("../test/Tombstones_simple.dae");
+        auto entModel = resources.models.getResource(&resources, "../test/Tombstones_simple.dae");
+        auto treeModel = resources.models.getResource(&resources, "../test/tree.obj");
 
-        entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 3));
+        entities.emplace_back(entModel, entShader, glm::vec3(-2, 1.5, 2));
         entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 0));
-        //entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 6));
-        //entities.emplace_back(entModel, entShader, glm::vec3(3, 0, 0));
-        //entities.emplace_back(entModel, entShader, glm::vec3(-3, 0, 0));
+        entities.emplace_back(entModel, entShader, glm::vec3(20, 0, 0));
+        entities.emplace_back(treeModel, entShader, glm::vec3(0, 0, 0));
+        entities.emplace_back(entModel, entShader, glm::vec3(40, 0, 0));
+        entities.emplace_back(entModel, entShader, glm::vec3(60, 0, 0));
 
         camera = &entities[0];
         entities[0].visible = false;
+        entities[0].yaw = -45.0f;
+        entities[0].pitch = -5.0f;
         entities[0].update = [](Window *pWindow, Entity *self, float deltaTime) {
             auto front = self->getFront();
             auto right = self->getRight();
@@ -36,8 +42,14 @@ public:
             if (pWindow->keyIsDown(GLFW_KEY_A)) self->position -= right * deltaTime * 2.0f;
         };
 
-        entities[1].size *= 0.03;
-        entities[1].update = [](Window *pWindow, Entity *self, float deltaTime) {
+        entities[1].size *= 0.02;
+        entities[2].size *= 0.02;
+        entities[3].size *= 0.1;
+        entities[4].size *= 0.02;
+        entities[5].size *= 0.02;
+        entities[3].update = [](Window *pWindow, Entity *self, float deltaTime) {
+            self->size += glm::vec3(sin(glfwGetTime() * 2.0f)) * 0.00001f;
+            // self->size = glm::vec3(abs(sin(deltaTime / 10.0f)) * 3.0f);
             //self->roll += deltaTime * 0.2f;
             //self->pitch += deltaTime * 0.5f;
         };

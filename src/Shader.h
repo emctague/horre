@@ -20,6 +20,10 @@ public:
         glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
     }
 
+    void uniform(const std::string &name, int value) {
+        glUniform1i(glGetUniformLocation(program, name.c_str()), value);
+    }
+
 private:
 
     /// The OpenGL shader program instance being used

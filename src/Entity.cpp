@@ -28,5 +28,8 @@ void Entity::render(glm::mat4 projection, glm::mat4 view) {
     shader->uniform("projection", projection);
     shader->uniform("view", view);
 
-    model->draw();
+    model->draw(shader.get());
+}
+
+Entity::~Entity() {
 }

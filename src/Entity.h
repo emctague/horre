@@ -9,6 +9,8 @@ class Entity {
 public:
     Entity(std::shared_ptr<Model> model, std::shared_ptr<Shader> shader, glm::vec3 position);
 
+    ~Entity();
+
     /** Render the entity onscreen with the given matrices. */
     void render(glm::mat4 projection, glm::mat4 view);
 

@@ -7,63 +7,42 @@
 #include <assimp/postprocess.h>
 #include "Model.h"
 
-Model::Model(const std::string &path) {
-    std::vector<float> vertices;
-    std::vector<unsigned> indices;
-
+Model::Model(ResourceSet *set, const std::string &path) {
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
-                                                   aiProcess_OptimizeMeshes | aiProcess_CalcTangentSpace |
-                                                   aiProcess_RemoveRedundantMaterials |
-                                                   aiProcess_PreTransformVertices);
+                                                   aiProcess_OptimizeMeshes | aiProcess_GenNormals |
+                                                   aiProcess_CalcTangentSpace | aiProcess_RemoveRedundantMaterials);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         throw std::runtime_error("Unable to open file: " + path + " (reason: " + importer.GetErrorString() + ")");
 
-    processNode(scene, scene->mRootNode, vertices, indices);
-
-    std::cout << indices.size() << std::endl;
-
-    // Copy the model data into the GPU
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned), indices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-    glEnableVertexAttribArray(0);
-
-    indiceCount = indices.size();
+    processNode(set, scene, scene->mRootNode, glm::mat4{1});
 }
 
 Model::~Model() {
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
 }
 
-void
-Model::processNode(const aiScene *scene, aiNode *node, std::vector<float> &vertices, std::vector<unsigned> &indices) {
+void Model::processNode(ResourceSet *set, const aiScene *scene, aiNode *node, glm::mat4 transform) {
+    std::cout << "Node: " << node->mName.C_Str() << " (";
+
+    aiMatrix4x4 &m = node->mTransformation;
+
+    glm::mat4 nodeTransform = transform * glm::mat4{
+            m.a1, m.b1, m.c1, m.d1,
+            m.a2, m.b2, m.c2, m.d2,
+            m.a3, m.b3, m.c3, m.d3,
+            m.a4, m.b4, m.c4, m.d4
+    };
+
     for (unsigned i = 0; i < node->mNumMeshes; i++) {
-        unsigned baseIndex = indices.empty() ? 0 : indices[indices.size() - 1] + 1;
-
-        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        for (unsigned j = 0; j < mesh->mNumVertices; j++) {
-            vertices.push_back(mesh->mVertices[j].x);
-            vertices.push_back(mesh->mVertices[j].y);
-            vertices.push_back(mesh->mVertices[j].z);
-        }
-
-        for (unsigned j = 0; j < mesh->mNumFaces; j++) {
-            for (unsigned k = 0; k < mesh->mFaces[j].mNumIndices; k++) {
-                indices.push_back(mesh->mFaces[j].mIndices[k] + baseIndex);
-            }
-        }
+        std::cout << scene->mMeshes[node->mMeshes[i]]->mName.C_Str() << "( ";
+        meshes.emplace_back(std::make_unique<Mesh>(set, scene, scene->mMeshes[node->mMeshes[i]], nodeTransform));
+        std::cout << "), ";
     }
 
+    std::cout << ")" << std::endl << "\t";
+
     for (unsigned i = 0; i < node->mNumChildren; i++) {
-        processNode(scene, node->mChildren[i], vertices, indices);
+        processNode(set, scene, node->mChildren[i], nodeTransform);
     }
 }
