@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 
 /* Note: resourceHash code is derived from: https://gist.github.com/gyakoo/1f77661d670876e6d0c1 */
@@ -22,13 +23,10 @@ inline std::size_t resourceHash(const T& first, Args ...args) {
 template<class T, class... Args>
 class ResourceManager {
 public:
-    using PtrType = std::shared_ptr<T>;
-
     ResourceManager() = default;
 
-
     /** Get or create a resource with the given name. */
-    PtrType getResource(Args&&... args) {
+    std::shared_ptr<T> getResource(Args&&... args) {
         auto hash = resourceHash(args...);
         if (!resources.count(hash))
             resources[hash] = std::make_shared<T>(args...);
@@ -53,7 +51,7 @@ public:
 private:
 
     /** A list of all resources currently loaded. */
-    std::unordered_map<std::size_t, PtrType> resources;
+    std::unordered_map<std::size_t, std::shared_ptr<T>> resources;
 };
 
 

@@ -4,6 +4,7 @@ class ResourceSet;
 
 #include <assimp/scene.h>
 #include <vector>
+#include <memory>
 #include "Texture.h"
 #include "Shader.h"
 
