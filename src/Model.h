@@ -28,9 +28,9 @@ public:
     ~Model();
 
     /// Render this model (must be `use()`d first.)
-    void draw(Shader *shader) {
+    void draw(Shader *shader, bool usesCustomMaterials = false) {
         for (auto &mesh : meshes)
-            mesh->draw(shader);
+            mesh->draw(shader, usesCustomMaterials);
     }
 
 private:

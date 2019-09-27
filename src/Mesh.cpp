@@ -88,13 +88,15 @@ Mesh::Mesh(ResourceSet *set, const aiScene *scene, aiMesh *mesh, glm::mat4 trans
     }
 }
 
-void Mesh::draw(Shader *shader) {
-    shader->uniform("diffuse", 0);
-    shader->uniform("alpha", 1);
-    shader->uniform("mesh", transform);
+void Mesh::draw(Shader *shader, bool usesCustomMaterials) {
+    if (!usesCustomMaterials) {
+        shader->uniform("diffuse", 0);
+        shader->uniform("alpha", 1);
+        shader->uniform("mesh", transform);
 
-    diffuse->use(0);
-    alpha->use(1);
+        diffuse->use(0);
+        alpha->use(1);
+    }
 
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, indiceCount, GL_UNSIGNED_INT, nullptr);

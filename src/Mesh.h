@@ -14,7 +14,7 @@ public:
 
     ~Mesh();
 
-    void draw(Shader *shader);
+    void draw(Shader *shader, bool usesCustomMaterials);
 
 private:
     std::shared_ptr<Texture> diffuse, alpha;

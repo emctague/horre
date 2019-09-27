@@ -35,6 +35,12 @@ public:
         return glfwGetKey(window, key) == GLFW_PRESS;
     }
 
+    glm::i64vec2 getFramebufferSize() {
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        return glm::i64vec2{width, height};
+    }
+
 
     /** Runs the main window update/draw loop. */
     void mainLoop();

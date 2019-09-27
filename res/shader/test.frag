@@ -5,7 +5,9 @@ in vec2 diffuseUV;
 in vec2 alphaUV;
 in vec3 normal;
 
-out vec4 color;
+layout (location = 0) out vec3 gPosition;
+layout (location = 1) out vec3 gNormal;
+layout (location = 2) out vec4 gAlbedoSpecular;
 
 uniform sampler2D diffuse;
 uniform sampler2D alpha;
@@ -19,7 +21,11 @@ const float energyConservation = (8.0 + shininess) / (8.0 * pi);
 const float quadraticAttenuation = 0.032f;
 
 void main() {
-    float a = texture(alpha, alphaUV).r;
+    gPosition = fragPos;
+    gNormal = normalize(normal);
+    gAlbedoSpecular.rgb = texture(diffuse, diffuseUV).rgb;
+    gAlbedoSpecular.a = 0.1; /* TODO Stop hardcoding that */
+    /*float a = texture(alpha, alphaUV).r;
     if (a < 0.1) discard;
 
     float distance = length(lightPos - fragPos);
@@ -37,5 +43,5 @@ void main() {
 
     vec3 allLights = (diffuseColor + specularColor) * texture(diffuse, diffuseUV).rgb;
 
-    color = vec4(allLights, a);
+    color = vec4(allLights, a);*/
 }

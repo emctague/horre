@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "Window.h"
 #include "ResourceSet.h"
+#include "Framebuffer.h"
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -11,13 +12,21 @@ public:
 
     App() :
             window(glm::i64vec2{1280, 720}, "Title", this),
+            gBuffer(&window, {
+                    {"gPosition",       GL_RGB16F, GL_RGB,  GL_FLOAT}, /* Position */
+                    {"gNormal",         GL_RGB16F, GL_RGB,  GL_FLOAT}, /* Normal */
+                    {"gAlbedoSpecular", GL_RGBA,   GL_RGBA, GL_UNSIGNED_BYTE} /* Color + Specular Color */
+            }),
             projection() {
         window.setCursorEnabled(false);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glEnable(GL_FRAMEBUFFER_SRGB);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        deferredModel = resources.models.getResource(&resources, "screen.dae");
+        deferredShader = resources.shaders.getResource("deferred.vert", "deferred.frag");
 
         auto entShader = resources.shaders.getResource("test.vert", "test.frag");
         auto entModel = resources.models.getResource(&resources, "Tombstones_simple.dae");
@@ -61,6 +70,9 @@ public:
     }
 
     ~App() {
+        deferredShader.reset();
+        deferredModel.reset();
+
         // Unload all loaded entities
         entities.clear();
     }
@@ -87,6 +99,8 @@ public:
     }
 
     void render() override {
+        gBuffer.bind();
+
         glClear((unsigned) GL_COLOR_BUFFER_BIT | (unsigned) GL_DEPTH_BUFFER_BIT);
 
         glm::vec3 front = camera->getFront();
@@ -97,6 +111,16 @@ public:
             if (entity.visible)
                 entity.render(projection, view, camera->position);
         }
+
+        //gBuffer.blitDepthTo(mainBuffer, 1280, 720);
+        mainBuffer.bind();
+
+        glDisable(GL_DEPTH_TEST);
+        deferredShader->use();
+        deferredShader->uniform("viewPos", camera->position);
+        gBuffer.asTextures(deferredShader.get());
+        deferredModel->draw(deferredShader.get(), true);
+        glEnable(GL_DEPTH_TEST);
     }
 
     void onResize(glm::i64vec2 size) override {
@@ -106,11 +130,16 @@ public:
                 0.1f,
                 100.0f
         );
+        gBuffer.updateSize(&window);
     }
 
 private:
     Window window; /**< Handle for window, graphics + input. */
+    Framebuffer mainBuffer; /**< Main framebuffer handle */
+    Framebuffer gBuffer; /**< GBuffer (deferred rendering) target */
     ResourceSet resources; /**< Keeps track of all resources. */
+    std::shared_ptr<Shader> deferredShader; /**< The shader used for deferred rendering. */
+    std::shared_ptr<Model> deferredModel; /**< The model used for deferred rendering. */
     std::vector<Entity> entities; /**< All entities in the scene. */
     Entity *camera = nullptr; /** The entity that acts as a camera object. */
     glm::mat4 projection; /**< Projection matrix used. */
