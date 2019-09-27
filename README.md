@@ -27,7 +27,9 @@ working directory you run it from, at least for the time being. It refers to res
 
 ## Plans
 
-- Deferred rendering!!!
+- Deferred rendering needs to be fixed
+
+- Maybe switch to vulkan? Might be a PITA especially on mac.
 
 - We still need to add basic physics
 
