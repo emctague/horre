@@ -9,6 +9,7 @@ Window::Window(glm::i64vec2 size, const char *title, IWindowUser *user) : size(s
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
     glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
+    glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
 
     window = glfwCreateWindow(size.x, size.y, title, nullptr, nullptr);
 
