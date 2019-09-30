@@ -33,6 +33,7 @@ public:
         deferredModel = resources.models.getResource(&resources, "screen.dae");
         deferredShader = resources.shaders.getResource("deferred.vert", "deferred.frag");
                 
+        /* This updater provides WASD movement controls for an entity. */
         updaters.insert({"movable", [](Window *pWindow, Entity *self, float deltaTime) {
             auto front = self->getFront();
             auto right = self->getRight();
@@ -42,6 +43,7 @@ public:
             if (pWindow->keyIsDown(GLFW_KEY_A)) self->position -= right * deltaTime * 2.0f;
         }});
                 
+        /* This updater makes an entity slightly resize larger and smaller constantly. */
         updaters.insert({"bouncy", [](Window *pWindow, Entity *self, float deltaTime) {
             self->size += glm::vec3(sin(glfwGetTime() * 2.0f)) * 0.00001f;
         }});
@@ -125,25 +127,30 @@ public:
         std::ifstream in(GlobalConfig_MapPath + path);
         if (!in.is_open()) throw std::runtime_error("Failed to open map file: " + path);
 
+        /* Each line of input is an entity, specified as key-value pairs x=x, separated
+         * by spaces. */
         std::string line;
         while (std::getline(in, line)) {
             std::stringstream tokenizer(line);
             std::string token;
             std::vector<std::string> tokens;
 
+            /* Read each token (key-value pair) */
             while (getline(tokenizer, token, ' ')) tokens.push_back(token);
             
-            bool isCamera = false;
-            bool isVisible = true;
-            glm::vec3 position { 0.0f, 0.0f, 0.0f };
-            glm::vec3 scale { 1.0f, 1.0f, 1.0f };
-            std::string vertexShader = "test.vert";
-            std::string fragmentShader = "test.frag";
-            std::string model = "screen.dae";
-            float pitch = 0, yaw = 0;
-            UpT updater = nullptr;
+            /* These properties configure the state of a new entity. */
+            bool isCamera = false; /**< Indicates if the entity is to be set as the Camera. */
+            bool isVisible = true; /**< Indicates if the entity should be rendered. */
+            glm::vec3 position { 0.0f, 0.0f, 0.0f }; /**< The entity's initial position. */
+            glm::vec3 scale { 1.0f, 1.0f, 1.0f }; /**< The entity's initial scale. */
+            std::string vertexShader = "test.vert"; /**< Vertex shader filename, */
+            std::string fragmentShader = "test.frag"; /**< Fragment shader filename. */
+            std::string model = "screen.dae"; /**< Model filename for this entity. */
+            float pitch = 0, yaw = 0; /**< Pitch and yaw of entity (rotation.) */
+            UpT updater = nullptr; /**< Function used to update entity state. */
 
             for (auto& token : tokens) {
+                /* Split token into key and value. */
                 std::string key = token.substr(0, token.find('='));
                 std::string value = token.substr(token.find('=') + 1);
                 
