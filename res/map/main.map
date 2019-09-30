@@ -1,0 +1,7 @@
+m=Tombstones_simple.dae v=test.vert f=test.frag x=-2 y=1.5 z=2 camera=true visible=false rp=-5 ry=-45 updater=movable
+m=Tombstones_simple.dae v=test.vert f=test.frag x=0 y=0 0 s=0.02
+m=Tombstones_simple.dae v=test.vert f=test.frag x=20 y=0 z=0 s=0.02
+m=Tombstones_simple.dae v=test.vert f=test.frag x=40 y=0 z=0 s=0.02
+m=Tombstones_simple.dae v=test.vert f=test.frag x=60 y=0 z=0 s=0.02
+m=tree.obj v=test.vert f=test.frag x=0 y=0 z=0 s=0.1 updater=bouncy
+

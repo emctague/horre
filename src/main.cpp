@@ -6,10 +6,15 @@
 #include "Framebuffer.h"
 #include <glm/glm.hpp>
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <unordered_map>
 
 class App : public IWindowUser {
 public:
 
+    using UpT = void(*)(Window*, Entity*, float);
+    
     App() :
             window(glm::i64vec2{1280, 720}, "Title", this),
             gBuffer(&window, {
@@ -27,42 +32,22 @@ public:
 
         deferredModel = resources.models.getResource(&resources, "screen.dae");
         deferredShader = resources.shaders.getResource("deferred.vert", "deferred.frag");
-
-        auto entShader = resources.shaders.getResource("test.vert", "test.frag");
-        auto entModel = resources.models.getResource(&resources, "Tombstones_simple.dae");
-        auto treeModel = resources.models.getResource(&resources, "tree.obj");
-
-        entities.emplace_back(entModel, entShader, glm::vec3(-2, 1.5, 2));
-        entities.emplace_back(entModel, entShader, glm::vec3(0, 0, 0));
-        entities.emplace_back(entModel, entShader, glm::vec3(20, 0, 0));
-        entities.emplace_back(treeModel, entShader, glm::vec3(0, 0, 0));
-        entities.emplace_back(entModel, entShader, glm::vec3(40, 0, 0));
-        entities.emplace_back(entModel, entShader, glm::vec3(60, 0, 0));
-
-        camera = &entities[0];
-        entities[0].visible = false;
-        entities[0].yaw = -45.0f;
-        entities[0].pitch = -5.0f;
-        entities[0].update = [](Window *pWindow, Entity *self, float deltaTime) {
+                
+        updaters.insert({"movable", [](Window *pWindow, Entity *self, float deltaTime) {
             auto front = self->getFront();
             auto right = self->getRight();
             if (pWindow->keyIsDown(GLFW_KEY_W)) self->position += front * deltaTime * 2.0f;
             if (pWindow->keyIsDown(GLFW_KEY_S)) self->position -= front * deltaTime * 2.0f;
             if (pWindow->keyIsDown(GLFW_KEY_D)) self->position += right * deltaTime * 2.0f;
             if (pWindow->keyIsDown(GLFW_KEY_A)) self->position -= right * deltaTime * 2.0f;
-        };
-
-        entities[1].size *= 0.02;
-        entities[2].size *= 0.02;
-        entities[3].size *= 0.1;
-        entities[4].size *= 0.02;
-        entities[5].size *= 0.02;
-        entities[3].update = [](Window *pWindow, Entity *self, float deltaTime) {
+        }});
+                
+        updaters.insert({"bouncy", [](Window *pWindow, Entity *self, float deltaTime) {
             self->size += glm::vec3(sin(glfwGetTime() * 2.0f)) * 0.00001f;
-            // self->size = glm::vec3(abs(sin(deltaTime / 10.0f)) * 3.0f);
-            //self->roll += deltaTime * 0.2f;
-            //self->pitch += deltaTime * 0.5f;
-        };
+        }});
+
+        loadMap("main.map");
+       
     }
 
     void run() {
@@ -91,8 +76,8 @@ public:
         }
 
         for (auto &entity : entities) {
-            if (entity.update) {
-                entity.update(&window, &entity, deltaTime);
+            if (entity->update) {
+                entity->update(&window, entity.get(), deltaTime);
             }
         }
 
@@ -108,8 +93,8 @@ public:
         glm::mat4 view = glm::lookAt(camera->position, camera->position + front, up);
 
         for (auto &entity : entities) {
-            if (entity.visible)
-                entity.render(projection, view, camera->position);
+            if (entity->visible)
+                entity->render(projection, view, camera->position);
         }
 
         //gBuffer.blitDepthTo(mainBuffer, 1280, 720);
@@ -133,6 +118,69 @@ public:
         gBuffer.updateSize(&window);
     }
 
+    void loadMap(const std::string& path) {
+        entities.clear();
+        camera = nullptr;
+
+        std::ifstream in(GlobalConfig_MapPath + path);
+        if (!in.is_open()) throw std::runtime_error("Failed to open map file: " + path);
+
+        std::string line;
+        while (std::getline(in, line)) {
+            std::stringstream tokenizer(line);
+            std::string token;
+            std::vector<std::string> tokens;
+
+            while (getline(tokenizer, token, ' ')) tokens.push_back(token);
+            
+            bool isCamera = false;
+            bool isVisible = true;
+            glm::vec3 position { 0.0f, 0.0f, 0.0f };
+            glm::vec3 scale { 1.0f, 1.0f, 1.0f };
+            std::string vertexShader = "test.vert";
+            std::string fragmentShader = "test.frag";
+            std::string model = "screen.dae";
+            float pitch = 0, yaw = 0;
+            UpT updater = nullptr;
+
+            for (auto& token : tokens) {
+                std::string key = token.substr(0, token.find('='));
+                std::string value = token.substr(token.find('=') + 1);
+                
+                /* TODO replace this with some nice parsing from a data structure */
+                if (key == "m") model = value;
+                else if (key == "v") vertexShader = value;
+                else if (key == "f") fragmentShader = value;
+                else if (key == "x") position.x = std::stof(value);
+                else if (key == "y") position.y = std::stof(value);
+                else if (key == "z") position.z = std::stof(value);
+                else if (key == "s") scale *= std::stof(value);
+                else if (key == "sx") scale.x *= std::stof(value);
+                else if (key == "sy") scale.y *= std::stof(value);
+                else if (key == "sz") scale.z *= std::stof(value);
+                else if (key == "camera") isCamera = value == "true";
+                else if (key == "visible") isVisible = value == "true";
+                else if (key == "ry") yaw = std::stof(value);
+                else if (key == "rp") pitch = std::stof(value);
+                else if (key == "updater") updater = updaters[value];
+                else std::cout << "Unknown key: " << key << std::endl;
+            }
+            
+            entities.emplace_back(std::make_unique<Entity>(
+                   resources.models.getResource(&resources, std::string(model)),
+                   resources.shaders.getResource(std::string(vertexShader), std::string(fragmentShader)),
+                       position));
+            
+            entities.back()->visible = isVisible;
+            entities.back()->size = scale;
+            entities.back()->yaw = yaw;
+            entities.back()->pitch = pitch;
+            entities.back()->update = updater;
+            if (isCamera) camera = entities.back().get();
+        }
+
+    }
+
 private:
     Window window; /**< Handle for window, graphics + input. */
     Framebuffer mainBuffer; /**< Main framebuffer handle */
@@ -140,7 +188,8 @@ private:
     ResourceSet resources; /**< Keeps track of all resources. */
     std::shared_ptr<Shader> deferredShader; /**< The shader used for deferred rendering. */
     std::shared_ptr<Model> deferredModel; /**< The model used for deferred rendering. */
-    std::vector<Entity> entities; /**< All entities in the scene. */
+    std::vector<std::unique_ptr<Entity>> entities; /**< All entities in the scene. */
+    std::unordered_map<std::string, UpT> updaters; /**<All registered update functions for entities.*/
     Entity *camera = nullptr; /** The entity that acts as a camera object. */
     glm::mat4 projection; /**< Projection matrix used. */
 };

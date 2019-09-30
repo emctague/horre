@@ -9,3 +9,4 @@
 #define GlobalConfig_TexturePath "res/texture/" /*< Texture files path */
 #define GlobalConfig_ShaderPath "res/shader/" /*< Shader files path */
 #define GlobalConfig_ModelPath "res/model/" /*< Model files path */
+#define GlobalConfig_MapPath "res/map/" /*<Map files path*/
